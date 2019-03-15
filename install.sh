@@ -33,7 +33,7 @@ echo enabling services...
 systemctl enable usb-gadget.service
 if [ ! $rebootneed -eq 1 ]
   then
-  echo type "systemctl enable usb-gadget.service" to enable service
+  echo type '"systemctl start usb-gadget.service"' to start service
   else
   echo "system reboot required!"
 fi
