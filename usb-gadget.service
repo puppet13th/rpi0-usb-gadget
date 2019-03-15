@@ -6,7 +6,6 @@ After=systemd-modules-load.service
 
 [Service]
 Type=forking
-PIDFile=/run/usb-gadget.pid
 RemainAfterExit=yes
 ExecStart=/usr/bin/usb-gadget-init start
 ExecStop=/usr/bin/usb-gadget-init stop
