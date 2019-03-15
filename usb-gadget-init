@@ -55,7 +55,7 @@ if [ $1 = "stop" ]
   then
   rm configs/c.1/rndis.usb0
   rmdir functions/rndis.usb0
-  modprobe -r usb_f_rndis u_ether 
+  modprobe -r usb_f_rndis usb_f_ecm u_ether 
 fi
 }
 
@@ -80,6 +80,11 @@ if [ $1 = "start" ]
 fi
 }
 
+if [ ! $1 ]
+  then
+  echo usage : $0 [start] [stop]
+fi
+
 if [ $1 = "start" ]
   then
   # mikrotik routerOS compability
@@ -93,8 +98,8 @@ if [ $1 = "start" ]
     modprobe -r g_ether
   fi
   # mikrotik routerOS compability
-  #modprobe libcomposite
-  mount -t configfs none /sys/kernel/config
+  modprobe libcomposite
+  #mount -t configfs none /sys/kernel/config
   mkdir $configdir && cd $configdir
 
   echo 0x1d6b > idVendor  # Linux Foundation
@@ -140,6 +145,11 @@ if [ $1 = "stop" ]
   done
   rmdir configs/c.1
   rmdir strings/0x409
-  umount /sys/kernel/config
+  if [ $routerOS -eq 1 ]
+    then
+    modprobe -r usb_f_ss_lb
+  fi
+  rmdir $configdir
   modprobe -r libcomposite
+  #umount /sys/kernel/config
 fi
