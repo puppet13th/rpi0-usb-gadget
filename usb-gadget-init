@@ -65,6 +65,11 @@ function mass_storage {
 if [ $1 = "start" ]
   then
   modprobe usb_f_mass_storage
+  if [ ! -f $usb_disk ]
+    then
+    echo creating default $usb_disk image ...
+    dd if=/dev/zero of=$usb_disk bs=1M
+  fi
   mkdir -p functions/mass_storage.usb0
   echo $stall > functions/mass_storage.usb0/stall
   echo $cdrom > functions/mass_storage.usb0/lun.0/cdrom
