@@ -9,7 +9,7 @@ gadgetname='gadget0'
 configdir=/sys/kernel/config/usb_gadget/$gadgetname
 serialnumber=`cat /proc/cpuinfo | grep Serial | awk {'print $3'}`	# get serial number from soc
 manufacturer='Raspberry'
-product=`hostname`							# user hostname as product info
+product=`hostname`							# use hostname as product info
 #rndis mac-address
 HOST="48:6f:73:74:50:43" # "HostPC"
 SELF="42:61:64:55:53:42" # "BadUSB"
@@ -22,72 +22,85 @@ nofua=0
 
 # serial - acm
 function acm {
-mkdir -p functions/acm.usb0
-ln -s functions/acm.usb0 configs/c.1/
+if [ $1 = "start" ]
+  then
+  mkdir -p functions/acm.usb0
+  systemctl start getty@ttyGS0.service
+  ln -s functions/acm.usb0 configs/c.1/
+fi
 }
 
 # ethernet - rndis
 function rndis {
-mkdir -p functions/rndis.usb0
-echo $HOST > functions/rndis.usb0/host_addr
-echo $SELF > functions/rndis.usb0/dev_addr
-echo RNDIS > functions/rndis.usb0/os_desc/interface.rndis/compatible_id
-echo 5162001 > functions/rndis.usb0/os_desc/interface.rndis/sub_compatible_id
-ln -s functions/rndis.usb0 configs/c.1/
+if [ $1 = "start" ]
+  then
+  mkdir -p functions/rndis.usb0
+  echo $HOST > functions/rndis.usb0/host_addr
+  echo $SELF > functions/rndis.usb0/dev_addr
+  echo RNDIS > functions/rndis.usb0/os_desc/interface.rndis/compatible_id
+  echo 5162001 > functions/rndis.usb0/os_desc/interface.rndis/sub_compatible_id
+  ln -s functions/rndis.usb0 configs/c.1/
+fi
 }
 
 # mass_storage
 function mass_storage {
-mkdir -p functions/mass_storage.usb0
-echo $stall > functions/mass_storage.usb0/stall
-echo $cdrom > functions/mass_storage.usb0/lun.0/cdrom
-echo $ro > functions/mass_storage.usb0/lun.0/ro
-echo $nofua > functions/mass_storage.usb0/lun.0/nofua
-echo $usb_disk > functions/mass_storage.usb0/lun.0/file
-ln -s functions/mass_storage.usb0 configs/c.1/
+if [ $1 = "start" ]
+  then
+  mkdir -p functions/mass_storage.usb0
+  echo $stall > functions/mass_storage.usb0/stall
+  echo $cdrom > functions/mass_storage.usb0/lun.0/cdrom
+  echo $ro > functions/mass_storage.usb0/lun.0/ro
+  echo $nofua > functions/mass_storage.usb0/lun.0/nofua
+  echo $usb_disk > functions/mass_storage.usb0/lun.0/file
+  ln -s functions/mass_storage.usb0 configs/c.1/
+fi
 }
 
-# mikrotik routerOS compability
-if [ $routerOS -eq 1 ]
+if [ $1 = "start" ]
   then
-  modprobe g_zero
-  sleep 1
-  modprobe -r g_zero
-  modprobe g_ether
-  sleep 6
-  modprobe -r g_ether
+  # mikrotik routerOS compability
+  if [ $routerOS -eq 1 ]
+    then
+    modprobe g_zero
+    sleep 1
+   modprobe -r g_zero
+   modprobe g_ether
+    sleep 6
+   modprobe -r g_ether
+  fi
+  # mikrotik routerOS compability
+  modprobe libcomposite
+
+  mkdir $configdir && cd $configdir
+
+  echo 0x1d6b > idVendor  # Linux Foundation
+  echo 0x0104 > idProduct # Multifunction Composite Gadget
+  echo 0x0100 > bcdDevice # v1.0.0
+  echo 0x0200 > bcdUSB    # USB 2.0
+
+  echo 0xEF > bDeviceClass
+  echo 0x02 > bDeviceSubClass
+  echo 0x01 > bDeviceProtocol
+
+  # OS descriptors
+  echo 1 > os_desc/use
+  echo 0xcd > os_desc/b_vendor_code
+  echo MSFT100 > os_desc/qw_sign
+
+  mkdir -p strings/0x409
+  echo "$serialnumber" > strings/0x409/serialnumber
+  echo "$manufacturer" > strings/0x409/manufacturer
+  echo "$product" > strings/0x409/product
+
+  mkdir -p configs/c.1
+  echo 250 > configs/c.1/MaxPower
+  ln -s configs/c.1 os_desc
+
+  for run in $gadgetmode
+    do
+    $run start
+  done
+
+  ls /sys/class/udc/ > UDC
 fi
-# mikrotik routerOS compability
-modprobe libcomposite
-
-mkdir $configdir && cd $configdir
-
-echo 0x1d6b > idVendor  # Linux Foundation
-echo 0x0104 > idProduct # Multifunction Composite Gadget
-echo 0x0100 > bcdDevice # v1.0.0
-echo 0x0200 > bcdUSB    # USB 2.0
-
-echo 0xEF > bDeviceClass
-echo 0x02 > bDeviceSubClass
-echo 0x01 > bDeviceProtocol
-
-# OS descriptors
-echo 1 > os_desc/use
-echo 0xcd > os_desc/b_vendor_code
-echo MSFT100 > os_desc/qw_sign
-
-mkdir -p strings/0x409
-echo "$serialnumber" > strings/0x409/serialnumber
-echo "$manufacturer" > strings/0x409/manufacturer
-echo "$product" > strings/0x409/product
-
-mkdir -p configs/c.1
-echo 250 > configs/c.1/MaxPower
-ln -s configs/c.1 os_desc
-
-for run in $gadgetmode
-  do
-  $run start
-done
-
-ls /sys/class/udc/ > UDC
