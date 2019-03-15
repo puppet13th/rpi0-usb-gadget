@@ -1,0 +1,10 @@
+[Unit]
+Description=RPi0 USB Gadget
+
+[Service]
+Type=forking
+RemainAfterExit=yes
+ExecStart=/sbin/usb-gadget-init
+
+[Install]
+WantedBy=sysinit.target
