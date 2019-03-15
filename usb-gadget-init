@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 # avaiable gadget mode :
 # acm           = serial port
 # rndis         = ethernet
@@ -24,6 +24,7 @@ nofua=0
 function acm {
 if [ $1 = "start" ]
   then
+  modprobe usb_f_acm
   mkdir -p functions/acm.usb0
   systemctl start getty@ttyGS0.service
   ln -s functions/acm.usb0 configs/c.1/
@@ -34,6 +35,7 @@ fi
 function rndis {
 if [ $1 = "start" ]
   then
+  modprobe usb_f_rndis
   mkdir -p functions/rndis.usb0
   echo $HOST > functions/rndis.usb0/host_addr
   echo $SELF > functions/rndis.usb0/dev_addr
@@ -47,6 +49,7 @@ fi
 function mass_storage {
 if [ $1 = "start" ]
   then
+  modprobe usb_f_mass_storage
   mkdir -p functions/mass_storage.usb0
   echo $stall > functions/mass_storage.usb0/stall
   echo $cdrom > functions/mass_storage.usb0/lun.0/cdrom
@@ -70,8 +73,8 @@ if [ $1 = "start" ]
     modprobe -r g_ether
   fi
   # mikrotik routerOS compability
-  modprobe libcomposite
-
+  #modprobe libcomposite
+  mount -t configfs none /sys/kernel/config
   mkdir $configdir && cd $configdir
 
   echo 0x1d6b > idVendor  # Linux Foundation
