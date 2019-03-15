@@ -4,7 +4,6 @@
 # rndis         = ethernet
 # mass_storage  = mass storage
 # if you want to user rndis with windows,make sure rndis in the first gadgetmode
-PIDFile=/run/usb-gadget.pid
 gadgetmode='rndis acm mass_storage'
 routerOS=1
 gadgetname='gadget0'
