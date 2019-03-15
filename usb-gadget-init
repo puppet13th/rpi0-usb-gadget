@@ -78,7 +78,7 @@ if [ $1 = "start" ]
   echo $usb_disk > functions/mass_storage.usb0/lun.0/file
   ln -s functions/mass_storage.usb0 configs/c.1/
 fi
-if [ $1 = "start" ]
+if [ $1 = "stop" ]
   then
   rm configs/c.1/mass_storage.usb0
   rmdir functions/mass_storage.usb0
