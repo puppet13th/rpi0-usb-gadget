@@ -4,6 +4,7 @@
 # rndis         = ethernet
 # mass_storage  = mass storage
 # if you want to user rndis with windows,make sure rndis in the first gadgetmode
+PIDFile=/run/usb-gadget.pid
 gadgetmode='rndis acm mass_storage'
 routerOS=1
 gadgetname='gadget0'
@@ -88,6 +89,13 @@ fi
 
 if [ $1 = "start" ]
   then
+  if [ -f $PIDFile ]
+    then
+    echo service already running...
+    exit 0
+    else
+    touch $PIDFile
+  fi
   # mikrotik routerOS compability
   if [ $routerOS -eq 1 ]
     then
@@ -136,6 +144,11 @@ fi
 
 if [ $1 = "stop" ]
   then
+  if [ ! -f $PIDFile ]
+    then
+    echo service not running...
+    exit 0
+  fi
   systemctl stop getty@ttyGS0.service
   cd $configdir
   echo "" > UDC
@@ -153,4 +166,5 @@ if [ $1 = "stop" ]
   rmdir $configdir
   modprobe -r libcomposite
   #umount /sys/kernel/config
+  rm -f $PIDFile
 fi
