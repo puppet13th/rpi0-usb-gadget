@@ -1,28 +1,18 @@
-#!/bin/bash
+#!/bin/bash -e
+# mikrotik routerOS compability
 modprobe -r g_zero
 modprobe g_ether
 sleep 6
 modprobe -r g_ether
+# mikrotik routerOS compability
 modprobe libcomposite
-#functions
-#ethernet mass_storage
-functions="serial ethernet mass_storage"
 
-# variable
-usb_gadget=/sys/kernel/config/usb_gadget
-gadgetname=gadget0
-configdir=$usb_gadget/$gadgetname
-
-#default usb config
-idVendor='0x1d6b' # Linux Foundation
-idProduct='0x0104' # Multifunction Composite Gadget
-bcdDevice='0x0100' # v1.0.0
-bcdUSB='0x0200' # USB2
-serialnumber=`cat /proc/cpuinfo | grep Serial | awk {'print $3'}`
+gadgetname='gadget0'
+configdir=/sys/kernel/config/usb_gadget/$gadgetname
+serialnumber=`cat /proc/cpuinfo | grep Serial | awk {'print $3'}`	# get serial number from soc
 manufacturer='Raspberry'
-product=`hostname`
-
-#ethernet mac-address
+product=`hostname`							# user hostname as product info
+#rndis mac-address
 HOST="48:6f:73:74:50:43" # "HostPC"
 SELF="42:61:64:55:53:42" # "BadUSB"
 
@@ -33,55 +23,49 @@ cdrom=0
 ro=0
 nofua=0
 
-function default_config {
-mkdir $configdir
-cd $configdir
-echo $idVendor > idVendor
-echo $idProduct > idProduct
-echo $bcdDevice > bcdDevice
-echo $bcdUSB > bcdUSB
-mkdir strings/0x409
-echo $serialnumber > strings/0x409/serialnumber
-echo $manufacturer > strings/0x409/manufacturer
-echo $product > strings/0x409/product
-mkdir -p configs/c.1/strings/0x409
+mkdir $configdir && cd $configdir
+
+echo 0x1d6b > idVendor  # Linux Foundation
+echo 0x0104 > idProduct # Multifunction Composite Gadget
+echo 0x0100 > bcdDevice # v1.0.0
+echo 0x0200 > bcdUSB    # USB 2.0
+
+echo 0xEF > bDeviceClass
+echo 0x02 > bDeviceSubClass
+echo 0x01 > bDeviceProtocol
+
+# OS descriptors
+echo 1 > os_desc/use
+echo 0xcd > os_desc/b_vendor_code
+echo MSFT100 > os_desc/qw_sign
+
+mkdir -p strings/0x409
+echo "$serialnumber" > strings/0x409/serialnumber
+echo "$manufacturer" > strings/0x409/manufacturer
+echo "$product" > strings/0x409/product
+
+mkdir -p functions/acm.usb0		# serial
+mkdir -p functions/rndis.usb0		# rndis
+mkdir -p functions/mass_storage.usb0	#mass_storage
+mkdir -p configs/c.1
 echo 250 > configs/c.1/MaxPower
-echo "Config 1: ethernet" > configs/c.1/strings/0x409/configuration
-}
 
-function serial {
-cd $configdir
-mkdir -p functions/acm.usb0
-ln -s functions/acm.usb0 configs/c.1/
-}
-
-function ethernet {
-cd $configdir
-mkdir -p functions/rndis.usb0
+# rndis
 echo $HOST > functions/rndis.usb0/host_addr
 echo $SELF > functions/rndis.usb0/dev_addr
-ln -s functions/rndis.usb0 configs/c.1/
-}
+echo RNDIS > functions/rndis.usb0/os_desc/interface.rndis/compatible_id
+echo 5162001 > functions/rndis.usb0/os_desc/interface.rndis/sub_compatible_id
 
-function mass_storage {
-cd $configdir
-mkdir -p functions/mass_storage.usb0
+# mass_storage
 echo $stall > functions/mass_storage.usb0/stall
 echo $cdrom > functions/mass_storage.usb0/lun.0/cdrom
 echo $ro > functions/mass_storage.usb0/lun.0/ro
 echo $nofua > functions/mass_storage.usb0/lun.0/nofua
 echo $usb_disk > functions/mass_storage.usb0/lun.0/file
+
+ln -s configs/c.1 os_desc
+ln -s functions/rndis.usb0 configs/c.1/
+ln -s functions/acm.usb0 configs/c.1/
 ln -s functions/mass_storage.usb0 configs/c.1/
-}
 
-function usb_run {
-cd $configdir
-ls /sys/class/udc > UDC
-}
-
-functions="default_config $functions usb_run"
-for run in $functions
-do
-	$run
-done
-
+ls /sys/class/udc/ > UDC
