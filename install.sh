@@ -3,8 +3,8 @@
 echo placing files...
 cp -f g_ether.conf /etc/modprobe.d/g_ether.conf
 cp -f usb-gadget-init /usr/bin/usb-gadget-init
-cp -f usb-gadget.service /usr/lib/systemd/system/usb-gadget.service
-chmod +x /sbin/usb-gadget-init
+mkdir -p /usr/lib/systemd/system && cp -f usb-gadget.service /usr/lib/systemd/system/usb-gadget.service
+chmod +x /usr/bin/usb-gadget-init
 
 echo updating system configuration...
 cat /boot/config.txt | grep -q "dtoverlay=dwc2" || echo "dtoverlay=dwc2" >> /boot/config.txt
