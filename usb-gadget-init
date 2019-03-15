@@ -3,7 +3,8 @@
 # acm           = serial port
 # rndis         = ethernet
 # mass_storage  = mass storage
-gadgetmode='acm rndis mass_storage'
+# if you want to user rndis with windows,make sure rndis in the first gadgetmode
+gadgetmode='rndis acm mass_storage'
 routerOS=1
 gadgetname='gadget0'
 configdir=/sys/kernel/config/usb_gadget/$gadgetname
