@@ -1,0 +1,26 @@
+Module                  Size  Used by
+usb_f_serial            3577  0
+libcomposite           48212  1 usb_f_serial
+u_serial               10956  1 usb_f_serial
+bnep                   11981  2
+hci_uart               27218  1
+btbcm                   8248  1 hci_uart
+serdev                  9370  1 hci_uart
+bluetooth             367082  24 hci_uart,bnep,btbcm
+ecdh_generic           17649  1 bluetooth
+brcmfmac              273262  0
+brcmutil                9318  1 brcmfmac
+snd_bcm2835            23253  0
+cfg80211              542402  1 brcmfmac
+snd_pcm                89814  1 snd_bcm2835
+rfkill                 21476  6 bluetooth,cfg80211
+snd_timer              22428  1 snd_pcm
+snd                    60280  3 snd_timer,snd_bcm2835,snd_pcm
+fixed                   3033  0
+uio_pdrv_genirq         3718  0
+uio                    10038  1 uio_pdrv_genirq
+dwc2                  128996  0
+udc_core               38862  3 u_serial,dwc2,libcomposite
+ip_tables              12427  0
+x_tables               22130  1 ip_tables
+ipv6                  398081  18
