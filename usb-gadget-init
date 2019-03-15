@@ -89,13 +89,6 @@ fi
 
 if [ $1 = "start" ]
   then
-  if [ -f $PIDFile ]
-    then
-    echo service already running...
-    exit 0
-    else
-    touch $PIDFile
-  fi
   # mikrotik routerOS compability
   if [ $routerOS -eq 1 ]
     then
@@ -144,11 +137,6 @@ fi
 
 if [ $1 = "stop" ]
   then
-  if [ ! -f $PIDFile ]
-    then
-    echo service not running...
-    exit 0
-  fi
   systemctl stop getty@ttyGS0.service
   cd $configdir
   echo "" > UDC
