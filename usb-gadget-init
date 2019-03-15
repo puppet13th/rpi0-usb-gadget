@@ -30,7 +30,7 @@ if [ $1 = "start" ]
   ln -s functions/acm.usb0 configs/c.1/
   systemctl start getty@ttyGS0.service
 fi
-if [ $1 = "stop"]
+if [ $1 = "stop" ]
   then
   systemctl stop getty@ttyGS0.service
   rm configs/c.1/acm.usb0
@@ -128,7 +128,7 @@ if [ $1 = "start" ]
   ls /sys/class/udc/ > UDC
 fi
 
-if [ $1 = "start" ]
+if [ $1 = "stop" ]
   then
   cd $configdir
   echo "" > UDC
