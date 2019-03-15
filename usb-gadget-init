@@ -27,9 +27,16 @@ if [ $1 = "start" ]
   then
   modprobe usb_f_acm
   mkdir -p functions/acm.usb0
-  systemctl start getty@ttyGS0.service
   ln -s functions/acm.usb0 configs/c.1/
+  systemctl start getty@ttyGS0.service
 fi
+if [ $1 = "stop"]
+  then
+  systemctl stop getty@ttyGS0.service
+  rm configs/c.1/acm.usb0
+  rmdir functions/acm.usb0
+  modprobe -r usb_f_acm u_serial
+ fi
 }
 
 # ethernet - rndis
@@ -43,6 +50,12 @@ if [ $1 = "start" ]
   echo RNDIS > functions/rndis.usb0/os_desc/interface.rndis/compatible_id
   echo 5162001 > functions/rndis.usb0/os_desc/interface.rndis/sub_compatible_id
   ln -s functions/rndis.usb0 configs/c.1/
+fi
+if [ $1 = "stop" ]
+  then
+  rm configs/c.1/rndis.usb0
+  rmdir functions/rndis.usb0
+  modprobe -r usb_f_rndis u_ether 
 fi
 }
 
@@ -58,6 +71,12 @@ if [ $1 = "start" ]
   echo $nofua > functions/mass_storage.usb0/lun.0/nofua
   echo $usb_disk > functions/mass_storage.usb0/lun.0/file
   ln -s functions/mass_storage.usb0 configs/c.1/
+fi
+if [ $1 = "start" ]
+  then
+  rm configs/c.1/mass_storage.usb0
+  rmdir functions/mass_storage.usb0
+  modprobe -r usb_f_mass_storage
 fi
 }
 
@@ -107,4 +126,19 @@ if [ $1 = "start" ]
   done
 
   ls /sys/class/udc/ > UDC
+fi
+
+if [ $1 = "start" ]
+  then
+  cd $configdir
+  echo "" > UDC
+  rm os_desc/c.1
+  for run in $gadgetmode
+    do
+    $run stop
+  done
+  rmdir configs/c.1
+  rmdir strings/0x409
+  umount /sys/kernel/config
+  modprobe -r libcomposite
 fi
