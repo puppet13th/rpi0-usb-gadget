@@ -68,7 +68,7 @@ if [ $1 = "start" ]
   if [ ! -f $usb_disk ]
     then
     echo creating default $usb_disk image ...
-    dd if=/dev/zero of=$usb_disk bs=1M
+    dd if=/dev/zero of=$usb_disk bs=1M count=1
   fi
   mkdir -p functions/mass_storage.usb0
   echo $stall > functions/mass_storage.usb0/stall
