@@ -1,5 +1,8 @@
+# /usr/lib/systemd/system/usb-gadget.service
+
 [Unit]
 Description=RPi0 USB Gadget
+After=systemd-modules-load.service
 
 [Service]
 Type=forking
