@@ -2,8 +2,8 @@
 
 echo placing files...
 cp -f g_ether.conf /etc/modprobe.d/g_ether.conf
-cp -f usb-gadget-init /sbin/usb-gadget-init
-cp -f usb-gadget.service /etc/systemd/system/usb-gadget.service
+cp -f usb-gadget-init /usr/bin/usb-gadget-init
+cp -f usb-gadget.service /usr/lib/systemd/system/usb-gadget.service
 chmod +x /sbin/usb-gadget-init
 
 echo updating system configuration...
