@@ -7,7 +7,7 @@ After=systemd-modules-load.service
 [Service]
 Type=forking
 RemainAfterExit=yes
-ExecStart=/sbin/usb-gadget-init
+ExecStart=/usr/bin/usb-gadget-init
 
 [Install]
 WantedBy=sysinit.target
