@@ -22,6 +22,7 @@ if [ $? -eq 1 ]
 fi
 
 echo updating system configuration...
+rebootneed=0
 grep -q "dtoverlay=dwc2" /boot/config.txt|| {
 echo "dtoverlay=dwc2" >> /boot/config.txt
 rebootneed=1
