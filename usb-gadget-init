@@ -1,7 +1,7 @@
 #!/bin/bash -e
 # mikrotik routerOS compability
 routerOS=1
-if [ $routerOS eq 1 ]
+if [ $routerOS -eq 1 ]
   then
   modprobe g_zero
   sleep 1
