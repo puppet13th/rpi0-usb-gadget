@@ -28,7 +28,7 @@ if [ $1 = "start" ]
   modprobe usb_f_acm
   mkdir -p functions/acm.usb0
   ln -s functions/acm.usb0 configs/c.1/
-  #systemctl start getty@ttyGS0.service
+  systemctl start getty@ttyGS0.service
 fi
 if [ $1 = "stop" ]
   then
@@ -141,7 +141,11 @@ fi
 
 if [ $1 = "stop" ]
   then
-  systemctl stop getty@ttyGS0.service
+  systemctl is-active getty@ttyGS0.service
+  if [ $? -eq 0 ]
+    then
+    systemctl stop getty@ttyGS0.service
+  fi
   cd $configdir
   echo "" > UDC
   rm os_desc/c.1
