@@ -1,6 +1,7 @@
 #!/bin/bash
 # avaiable gadget mode :
 # acm           = serial port
+# gser          = serial port
 # rndis         = ethernet
 # mass_storage  = mass storage
 # if you want to user rndis with windows,make sure rndis in the first gadgetmode
@@ -36,6 +37,24 @@ if [ $1 = "stop" ]
   rm configs/c.1/acm.usb0
   rmdir functions/acm.usb0
   modprobe -r usb_f_acm u_serial
+ fi
+}
+
+# serial - gser
+function gser {
+if [ $1 = "start" ]
+  then
+  modprobe usb_f_gser
+  mkdir -p functions/gser.usb0
+  ln -s functions/gser.usb0 configs/c.1/
+  systemctl start getty@ttyGS0.service
+fi
+if [ $1 = "stop" ]
+  then
+  systemctl stop getty@ttyGS0.service
+  rm configs/c.1/gser.usb0
+  rmdir functions/gser.usb0
+  modprobe -r usb_f_gser u_serial
  fi
 }
 
