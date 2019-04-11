@@ -2,19 +2,19 @@
 
 echo placing files...
 cmp -s g_ether.conf /etc/modprobe.d/g_ether.conf
-if [ $? -eq 1 ]
+if [ $? -ne 0 ]
   then
   echo updating /etc/modprobe.d/g_ether.conf
   cp -f g_ether.conf /etc/modprobe.d/g_ether.conf
 fi
 cmp -s usb-gadget-init /usr/bin/usb-gadget-init
-if [ $? -eq 1 ]
+if [ $? -ne 0 ]
   then
   echo updating /usr/bin/usb-gadget-init
   cp -f usb-gadget-init /usr/bin/usb-gadget-init
 fi
 cmp -s usb-gadget.service /usr/lib/systemd/system/usb-gadget.service
-if [ $? -eq 1 ]
+if [ $? -ne 0 ]
   then
   echo updating /usr/lib/systemd/system/usb-gadget.service
   mkdir -p /usr/lib/systemd/system && cp -f usb-gadget.service /usr/lib/systemd/system/usb-gadget.service
