@@ -2,7 +2,7 @@
 
 [Unit]
 Description=RPi0 USB Gadget
-After=systemd-modules-load.service
+#After=systemd-modules-load.service
 
 [Service]
 Type=forking
