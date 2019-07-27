@@ -112,15 +112,16 @@ fi
 
 if [ $1 = "start" ]
   then
+  modprobe dwc2
   # mikrotik routerOS compability
   if [ $routerOS -eq 1 ]
     then
     modprobe g_zero
     sleep 1
     modprobe -r g_zero
-    modprobe g_ether
-    sleep 6
-    modprobe -r g_ether
+    #modprobe g_ether
+    #sleep 6
+    #modprobe -r g_ether
   fi
   # mikrotik routerOS compability
   modprobe libcomposite
