@@ -27,7 +27,7 @@ grep -q "dtoverlay=dwc2" /boot/config.txt|| {
 echo "dtoverlay=dwc2" >> /boot/config.txt
 rebootneed=1
 }
-grep -q "dwc2" /etc/modules|| echo "dwc2" >> /etc/modules
+#grep -q "dwc2" /etc/modules|| echo "dwc2" >> /etc/modules
 
 echo enabling services...
 systemctl enable usb-gadget.service
