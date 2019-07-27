@@ -2,7 +2,7 @@
 
 [Unit]
 Description=RPi0 USB Gadget
-#After=systemd-modules-load.service
+After=sysinit.target
 
 [Service]
 Type=forking
@@ -11,4 +11,4 @@ ExecStart=/usr/bin/usb-gadget-init start
 ExecStop=/usr/bin/usb-gadget-init stop
 
 [Install]
-WantedBy=sysinit.target
+WantedBy=local-fs-pre.target
