@@ -2,7 +2,7 @@
 
 [Unit]
 Description=RPi0 USB Gadget
-Before=sysinit.target
+#Before=sysinit.target
 
 [Service]
 Type=forking
